@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BillDifferent</string>
+    <string name="paid_check_icon">Paid check icon</string>
+    <string name="money_icon_desc">Transaction Type Icon</string>
+    <string-array name="recurrence_options">
+        <item>Weekly</item>
+        <item>Biweekly</item>
+        <item>Monthly</item>
+    </string-array>
+</resources>

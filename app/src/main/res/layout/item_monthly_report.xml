@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="?android:selectableItemBackground">
+
+    <TextView
+        android:id="@+id/reportMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="January 2025"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#C62828"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:id="@+id/reportIncome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Income: $0.00"
+        android:textColor="#2E7D32"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/reportExpense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expenses: $0.00"
+        android:textColor="#C62828"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/reportNet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Net: $0.00"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/reportBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Balance: $0.00"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:paddingTop="4dp" />
+
+</LinearLayout>
