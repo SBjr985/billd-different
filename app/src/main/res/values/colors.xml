@@ -14,4 +14,5 @@
     <color name="green">#2E7D32</color>
     <color name="dark_red">#B00020</color> <!-- matches Figma's deep red -->
     <color name="dark_green">#01875F</color> <!-- a rich green similar to Figma -->
+    <color name="light_gray">#D3D3D3</color>
 </resources>

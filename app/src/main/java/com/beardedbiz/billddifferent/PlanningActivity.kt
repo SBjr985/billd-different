@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class PlanningActivity : AppCompatActivity() {
 
@@ -33,15 +35,41 @@ class PlanningActivity : AppCompatActivity() {
 
         accountSpinner = findViewById(R.id.accountSpinner)
         recyclerView = findViewById(R.id.transactionRecycler)
-        balanceTextView = findViewById(R.id.planningBalance)
-        lowestBalanceTextView = findViewById(R.id.lowestBalanceText)
+        balanceTextView = findViewById(R.id.bankBalanceInput)
+        lowestBalanceTextView = findViewById(R.id.lowestBalanceTextView)
         togglePaidButton = findViewById(R.id.togglePaidButton)
 
         transactionList = mutableListOf()
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        val bankBalanceInput = findViewById<EditText>(R.id.bankBalanceInput)
+        bankBalanceInput.setText(String.format("%.2f", currentBalance))
+        bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
+                val newBalance = enteredText.toDoubleOrNull()
+                if (newBalance != null && newBalance != currentBalance) {
+                    currentBalance = newBalance
+                    saveBankBalance(currentBalance)
+                    refreshList()
+                }
+            }
+        }
+        bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
+                val newBalance = enteredText.toDoubleOrNull()
+                if (newBalance != null && newBalance != currentBalance) {
+                    currentBalance = newBalance
+                    saveBankBalance(currentBalance)
+                    refreshList()
+                }
+            }
+        }
+
         setupAccountSpinner()
     }
+
 
     private fun setupAccountSpinner() {
         val accounts = getAllAccounts().toMutableList()
@@ -77,6 +105,19 @@ class PlanningActivity : AppCompatActivity() {
                 if (name.isNotBlank()) {
                     saveNewAccount(name)
                     currentAccount = name
+                    val bankBalanceInput = findViewById<EditText>(R.id.bankBalanceInput)
+                    bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
+                        if (!hasFocus) {
+                            val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
+                            val newBalance = enteredText.toDoubleOrNull()
+                            if (newBalance != null && newBalance != currentBalance) {
+                                currentBalance = newBalance
+                                saveBankBalance(currentBalance)
+                                refreshList()
+                            }
+                        }
+                    }
+
                     setupAccountSpinner()
                     loadAccountData()
                 }
@@ -100,8 +141,9 @@ class PlanningActivity : AppCompatActivity() {
     }
 
     private fun loadAccountData() {
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
         transactionList = getAllTransactions(this)
-            .sortedBy { it.date }
+            .sortedBy { LocalDate.parse(it.date, formatter) }
             .toMutableList()
 
         currentBalance = getSavedBankBalance()
@@ -114,7 +156,9 @@ class PlanningActivity : AppCompatActivity() {
                 context = this,
                 onSave = { newTransactions ->
                     transactionList.addAll(newTransactions)
-                    transactionList.sortBy { it.date }
+                    transactionList.sortWith(compareBy<Transaction> {
+                        LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                    }.thenByDescending { it.amount })
                     saveAllTransactions(transactionList)
                     refreshList()
                 },
@@ -128,7 +172,9 @@ class PlanningActivity : AppCompatActivity() {
                                 it.date >= fromDate
                     }
                     transactionList.addAll(newList)
-                    transactionList.sortBy { it.date }
+                    transactionList.sortWith(compareBy<Transaction> {
+                        LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                    }.thenByDescending { it.amount })
                     saveAllTransactions(transactionList)
                     refreshList()
                 }
@@ -141,10 +187,11 @@ class PlanningActivity : AppCompatActivity() {
             refreshList()
         }
 
-        findViewById<Button>(R.id.filterSortButton).setOnClickListener {
+        findViewById<ImageButton>(R.id.filterSortButton).setOnClickListener {
             val sortOptions = arrayOf("Date", "Amount", "Source")
             val filterOptions = arrayOf("All", "Paid Only", "Unpaid Only")
-
+            val renameButton = findViewById<ImageButton>(R.id.manageAccountButton)
+            val addButton = findViewById<ImageButton>(R.id.addAccountButton)
             val dialogView = layoutInflater.inflate(R.layout.dialog_filter_sort, null)
             val sortSpinner = dialogView.findViewById<Spinner>(R.id.sortSpinner)
             val filterSpinner = dialogView.findViewById<Spinner>(R.id.filterSpinner)
@@ -222,6 +269,19 @@ class PlanningActivity : AppCompatActivity() {
         getSharedPreferences("transactions_$oldName", Context.MODE_PRIVATE).edit().clear().apply()
 
         currentAccount = newName
+        val bankBalanceInput = findViewById<EditText>(R.id.bankBalanceInput)
+        bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
+                val newBalance = enteredText.toDoubleOrNull()
+                if (newBalance != null && newBalance != currentBalance) {
+                    currentBalance = newBalance
+                    saveBankBalance(currentBalance)
+                    refreshList()
+                }
+            }
+        }
+
         setupAccountSpinner()
         loadAccountData()
     }
@@ -237,6 +297,19 @@ class PlanningActivity : AppCompatActivity() {
                 prefs.edit().putStringSet("account_names", accounts).apply()
                 getSharedPreferences("transactions_$currentAccount", Context.MODE_PRIVATE).edit().clear().apply()
                 currentAccount = "Default"
+                val bankBalanceInput = findViewById<EditText>(R.id.bankBalanceInput)
+                bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
+                        val newBalance = enteredText.toDoubleOrNull()
+                        if (newBalance != null && newBalance != currentBalance) {
+                            currentBalance = newBalance
+                            saveBankBalance(currentBalance)
+                            refreshList()
+                        }
+                    }
+                }
+
                 setupAccountSpinner()
                 loadAccountData()
             }
@@ -259,7 +332,9 @@ class PlanningActivity : AppCompatActivity() {
                         onSave = { updatedTransactions ->
                             transactionList.removeAt(index)
                             transactionList.addAll(updatedTransactions)
-                            transactionList.sortBy { it.date }
+                            transactionList.sortWith(compareBy<Transaction> {
+                                LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                            }.thenByDescending { it.amount })
                             saveAllTransactions(transactionList)
                             refreshList()
                         },
@@ -273,7 +348,9 @@ class PlanningActivity : AppCompatActivity() {
                                         it.date >= fromDate
                             }
                             transactionList.addAll(newList)
-                            transactionList.sortBy { it.date }
+                            transactionList.sortWith(compareBy<Transaction> {
+                                LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                            }.thenByDescending { it.amount })
                             saveAllTransactions(transactionList)
                             refreshList()
                         }
@@ -349,6 +426,12 @@ class PlanningActivity : AppCompatActivity() {
         prefs.apply()
     }
 
+
+    private fun saveBankBalance(balance: Double) {
+        val prefs = getSharedPreferences("prefs_$currentAccount", Context.MODE_PRIVATE)
+        prefs.edit().putFloat("bank_balance", balance.toFloat()).apply()
+    }
+
     private fun getSavedBankBalance(): Double {
         val prefs = getSharedPreferences("prefs_$currentAccount", Context.MODE_PRIVATE)
         return prefs.getFloat("bank_balance", 0f).toDouble()
@@ -413,7 +496,9 @@ class PlanningActivity : AppCompatActivity() {
     }
 
     private fun refreshList() {
-        transactionList.sortBy { it.date }
+        transactionList.sortWith(compareBy<Transaction> {
+            LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+        }.thenByDescending { it.amount })
         val baseList = if (showPaidAndSkipped) {
             transactionList
         } else {
@@ -442,7 +527,9 @@ class PlanningActivity : AppCompatActivity() {
         filteredList = when (sortBy) {
             1 -> filteredList.sortedBy { it.amount }
             2 -> filteredList.sortedBy { it.source }
-            else -> filteredList.sortedBy { it.date }
+            else -> filteredList.sortedWith(compareBy<Transaction> {
+                LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+            }.thenByDescending { it.amount })
         }
 
         val updatedBalances = calculateRunningBalanceList(filteredList, currentBalance)
@@ -451,10 +538,11 @@ class PlanningActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_planning
-        bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+
+        bottomNavigation.setSelectedItemId(R.id.nav_planning)
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.nav_current -> {
                     startActivity(Intent(this, HomeActivity::class.java))
                     true
@@ -468,4 +556,5 @@ class PlanningActivity : AppCompatActivity() {
             }
         }
     }
+
 }

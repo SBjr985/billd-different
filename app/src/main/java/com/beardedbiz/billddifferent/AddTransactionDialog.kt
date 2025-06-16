@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.google.android.material.button.MaterialButton
 
 class AddTransactionDialog(
     context: Context,
@@ -36,8 +37,8 @@ class AddTransactionDialog(
         val isSkippedCheckbox = findViewById<CheckBox>(R.id.isSkippedCheckbox)
         val categorySpinner = findViewById<Spinner>(R.id.categorySpinner)
         val frequencySpinner = findViewById<Spinner>(R.id.frequencySpinner)
-        val saveButton = findViewById<Button>(R.id.saveTransactionButton)
-        val cancelButton = findViewById<Button>(R.id.cancelButton)
+        val saveButton = findViewById<MaterialButton>(R.id.saveTransactionButton)
+        val cancelButton = findViewById<MaterialButton>(R.id.cancelButton)
         val frequencyLabel = findViewById<TextView>(R.id.frequencyLabel)
 
         amountInput.inputType = InputType.TYPE_CLASS_NUMBER or

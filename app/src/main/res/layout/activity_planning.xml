@@ -2,16 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/planningLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    tools:context=".PlanningActivity">
 
     <!-- Logo -->
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="174dp"
         android:layout_height="79dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="24dp"
         android:contentDescription="App Logo"
         android:scaleType="fitCenter"
         android:src="@drawable/logo"
@@ -24,7 +26,7 @@
         android:id="@+id/planningTitle"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:background="#F0F0F0"
         android:gravity="center"
         android:text="Planning"
@@ -35,7 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Account Selector -->
+    <!-- Account Selector Row -->
     <LinearLayout
         android:id="@+id/accountRow"
         android:layout_width="0dp"
@@ -57,241 +59,199 @@
             android:spinnerMode="dropdown" />
 
         <ImageButton
-            android:id="@+id/addAccountButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Add Account"
-            android:src="@drawable/ic_add"
-            android:tint="@android:color/black" />
-
-        <ImageButton
             android:id="@+id/manageAccountButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_rename"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Manage Accounts"
-            android:src="@drawable/ic_settings"
-            android:tint="@android:color/black" />
+            android:contentDescription="Manage accounts" />
+
+        <ImageButton
+            android:id="@+id/addAccountButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Add account" />
     </LinearLayout>
 
-    <!-- Bank Balance Container -->
+    <!-- Bank Balance Editable Row -->
     <LinearLayout
-        android:id="@+id/balanceContainer"
+        android:id="@+id/bankBalanceRow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/balance_background"
-        android:padding="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
         app:layout_constraintTop_toBottomOf="@id/accountRow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
-            android:id="@+id/balanceLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bank Balance:"
-            android:textColor="#333"
-            android:textSize="10sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"/>
 
-        <TextView
-            android:id="@+id/planningBalance"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/bankBalanceInput"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="$0.00"
-            android:textColor="#000000"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/balanceInfoIcon"
-            android:layout_width="13dp"
-            android:layout_height="13dp"
-            android:layout_marginStart="6dp"
-            android:contentDescription="Info Icon"
-            android:src="@drawable/ic_info"
-            android:tint="#555" />
+            android:hint="$0.00"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:textSize="16sp" />
     </LinearLayout>
 
-    <!-- Action Buttons Row -->
+    <!-- Buttons Row -->
     <LinearLayout
-        android:id="@+id/buttonRow"
+        android:id="@+id/controlButtons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/balanceContainer"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/bankBalanceRow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <Button
             android:id="@+id/addNewButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Add Item"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:text="Add Item" />
 
         <Button
             android:id="@+id/togglePaidButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Hide Paid"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:text="Show Paid" />
 
-        <Button
+        <ImageButton
             android:id="@+id/filterSortButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Sort / Filter"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:contentDescription="Filter Sort"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
-    <!-- Header Row -->
+    <!-- Balance Info Icon -->
+    <ImageButton
+        android:id="@+id/balanceInfoIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:src="@android:drawable/ic_dialog_info"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Info"
+        app:layout_constraintTop_toBottomOf="@id/controlButtons"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Transaction Header Row -->
     <LinearLayout
-        android:id="@+id/headerRow"
-        android:layout_width="match_parent"
+        android:id="@+id/transactionHeader"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="#E0E0E0"
         android:orientation="horizontal"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonRow"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
+        android:background="#EEEEEE"
+        app:layout_constraintTop_toBottomOf="@id/controlButtons"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:layout_width="34dp"
-            android:layout_height="39dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/headerPaidIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/paid_check_icon"
-                android:src="@drawable/ic_checkmark" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:text=""
+            android:layout_weight="0.1" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date"
-                android:textColor="#000000" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Source"
-                android:textColor="#000000"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:text="Date"
+            android:textStyle="bold"
+            android:layout_weight="0.3" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Source"
+            android:textStyle="bold"
+            android:layout_weight="0.3" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Amount"
+            android:textStyle="bold"
             android:gravity="end"
-            android:orientation="vertical">
+            android:layout_weight="0.15" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Amount"
-                android:textColor="#000000" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Balance"
-                android:textColor="#000000"
-                android:textStyle="bold" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Balance"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:layout_weight="0.15" />
     </LinearLayout>
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/transactionRecycler"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
         android:clipToPadding="false"
         android:paddingBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@id/headerRow"
-        app:layout_constraintBottom_toTopOf="@id/lowestBalanceText"
+        app:layout_constraintTop_toBottomOf="@id/transactionHeader"
+        app:layout_constraintBottom_toTopOf="@id/lowestBalanceTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Empty Message -->
+    <!-- Empty State Message -->
     <TextView
         android:id="@+id/emptyMessage"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="24dp"
         android:text="No planned transactions. Tap Add Item to get started."
+        android:textAlignment="center"
+        android:padding="24dp"
         android:textColor="#999999"
         android:textSize="16sp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/transactionRecycler"
+        app:layout_constraintTop_toTopOf="@id/transactionRecycler"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Lowest Balance -->
     <TextView
-        android:id="@+id/lowestBalanceText"
+        android:id="@+id/lowestBalanceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:text="Lowest Balance:"
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/transactionRecycler"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
+        android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#F5F5F5"
+        android:background="?android:attr/windowBackground"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

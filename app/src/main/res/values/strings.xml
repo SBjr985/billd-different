@@ -2,6 +2,8 @@
     <string name="app_name">BillDifferent</string>
     <string name="paid_check_icon">Paid check icon</string>
     <string name="money_icon_desc">Transaction Type Icon</string>
+    <string name="hide_paid">Hide Paid</string>
+    <string name="show_paid">Show Paid</string>
     <string-array name="recurrence_options">
         <item>Weekly</item>
         <item>Biweekly</item>
