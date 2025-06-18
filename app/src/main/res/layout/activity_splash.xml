@@ -6,7 +6,7 @@
     android:background="@android:color/white">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="337dp"
+        android:layout_height="274dp"
         android:src="@drawable/logo" />
 </RelativeLayout>

@@ -1,9 +1,11 @@
+
 package com.beardedbiz.billddifferent
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +30,7 @@ class PlanningActivity : AppCompatActivity() {
     private var currentBalance: Double = 0.0
     private var showPaidAndSkipped = true
     private var currentAccount: String = "Default"
+    private lateinit var accountNames: MutableList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,29 +58,27 @@ class PlanningActivity : AppCompatActivity() {
                 }
             }
         }
-        bankBalanceInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val enteredText = bankBalanceInput.text.toString().replace("$", "").trim()
-                val newBalance = enteredText.toDoubleOrNull()
-                if (newBalance != null && newBalance != currentBalance) {
-                    currentBalance = newBalance
-                    saveBankBalance(currentBalance)
-                    refreshList()
-                }
-            }
-        }
 
         setupAccountSpinner()
     }
 
-
     private fun setupAccountSpinner() {
-        val accounts = getAllAccounts().toMutableList()
-        if (!accounts.contains("Default")) accounts.add(0, "Default")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, accounts + listOf("+ Add Account"))
+        accountNames = getAllAccounts().toMutableList()
+        if (!accountNames.contains("Default")) accountNames.add(0, "Default")
+
+        val adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, accountNames) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.text = "Account - ${accountNames[position]}"
+                view.textSize = 14f
+                return view
+            }
+        }
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         accountSpinner.adapter = adapter
 
-        accountSpinner.setSelection(accounts.indexOf(currentAccount))
+        accountSpinner.setSelection(accountNames.indexOf(currentAccount))
 
         accountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -125,12 +126,10 @@ class PlanningActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-
     private fun getAllAccounts(): Set<String> {
         val prefs = getSharedPreferences("accounts", Context.MODE_PRIVATE)
         return prefs.getStringSet("account_names", setOf("Default")) ?: setOf("Default")
     }
-
     private fun saveNewAccount(name: String) {
         val prefs = getSharedPreferences("accounts", Context.MODE_PRIVATE)
         val editor = prefs.edit()
@@ -139,7 +138,6 @@ class PlanningActivity : AppCompatActivity() {
         editor.putStringSet("account_names", current)
         editor.apply()
     }
-
     private fun loadAccountData() {
         val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
         transactionList = getAllTransactions(this)
@@ -222,7 +220,6 @@ class PlanningActivity : AppCompatActivity() {
         updateLowestBalanceDisplay(transactionList, calculateRunningBalanceList(transactionList, currentBalance))
         setupBottomNavigation()
     }
-
     private fun showAccountMenu() {
         val options = arrayOf("Rename Account", "Delete Account")
         AlertDialog.Builder(this)
@@ -235,7 +232,6 @@ class PlanningActivity : AppCompatActivity() {
             }
             .show()
     }
-
     private fun promptRenameAccount() {
         val input = EditText(this)
         input.setText(currentAccount)
@@ -251,7 +247,6 @@ class PlanningActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-
     private fun renameAccount(oldName: String, newName: String) {
         val accounts = getAllAccounts().toMutableSet()
         accounts.remove(oldName)
@@ -285,7 +280,6 @@ class PlanningActivity : AppCompatActivity() {
         setupAccountSpinner()
         loadAccountData()
     }
-
     private fun promptDeleteAccount() {
         AlertDialog.Builder(this)
             .setTitle("Delete Account")
@@ -316,7 +310,6 @@ class PlanningActivity : AppCompatActivity() {
             .setNegativeButton("Cancel", null)
             .show()
     }
-
     private fun setupAdapter() {
         val runningBalances = calculateRunningBalanceList(transactionList, currentBalance)
 
@@ -411,36 +404,29 @@ class PlanningActivity : AppCompatActivity() {
 
         recyclerView.adapter = transactionAdapter
     }
-
     private fun getAllTransactions(context: Context): List<Transaction> {
         val prefs = context.getSharedPreferences("transactions_$currentAccount", Context.MODE_PRIVATE)
         val json = prefs.getString("transactions", "[]")
         val type = object : TypeToken<List<Transaction>>() {}.type
         return Gson().fromJson(json, type)
     }
-
     private fun saveAllTransactions(transactions: List<Transaction>) {
         val prefs = getSharedPreferences("transactions_$currentAccount", Context.MODE_PRIVATE).edit()
         val json = Gson().toJson(transactions)
         prefs.putString("transactions", json)
         prefs.apply()
     }
-
-
     private fun saveBankBalance(balance: Double) {
         val prefs = getSharedPreferences("prefs_$currentAccount", Context.MODE_PRIVATE)
         prefs.edit().putFloat("bank_balance", balance.toFloat()).apply()
     }
-
     private fun getSavedBankBalance(): Double {
         val prefs = getSharedPreferences("prefs_$currentAccount", Context.MODE_PRIVATE)
         return prefs.getFloat("bank_balance", 0f).toDouble()
     }
-
     private fun updateBankBalanceText(balance: Double) {
         balanceTextView.text = "$" + String.format("%.2f", balance)
     }
-
     private fun calculateRunningBalanceList(transactions: List<Transaction>, startingBalance: Double): Map<Int, Double> {
         val runningBalances = mutableMapOf<Int, Double>()
         var running = startingBalance
@@ -452,7 +438,6 @@ class PlanningActivity : AppCompatActivity() {
         }
         return runningBalances
     }
-
     private fun updateLowestBalanceDisplay(transactions: List<Transaction>, balances: Map<Int, Double>) {
         if (transactions.isEmpty() || balances.isEmpty()) {
             lowestBalanceTextView.text = ""
@@ -494,7 +479,6 @@ class PlanningActivity : AppCompatActivity() {
 
         lowestBalanceTextView.text = styled
     }
-
     private fun refreshList() {
         transactionList.sortWith(compareBy<Transaction> {
             LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
@@ -510,7 +494,6 @@ class PlanningActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.emptyMessage).visibility =
             if (baseList.isEmpty()) View.VISIBLE else View.GONE
     }
-
     private fun applySortAndFilter(sortBy: Int, filterBy: Int) {
         var filteredList = if (showPaidAndSkipped) {
             transactionList
@@ -536,7 +519,6 @@ class PlanningActivity : AppCompatActivity() {
         transactionAdapter.updateData(filteredList, updatedBalances)
         updateLowestBalanceDisplay(filteredList, updatedBalances)
     }
-
     private fun setupBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
 
@@ -556,5 +538,4 @@ class PlanningActivity : AppCompatActivity() {
             }
         }
     }
-
 }

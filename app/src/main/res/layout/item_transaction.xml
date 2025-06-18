@@ -36,20 +36,15 @@
             android:layout_marginEnd="8dp"
             android:gravity="center_vertical">
 
+            <!-- Category Icon -->
             <ImageView
-                android:id="@+id/itemPayrollIcon"
+                android:id="@+id/itemCategoryIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_work"
-                android:visibility="invisible"
-                android:layout_marginEnd="4dp" />
-
-            <ImageView
-                android:id="@+id/itemMoneyIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_attach_money"
-                android:visibility="invisible" />
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_default_category"
+                android:contentDescription="@string/category_icon"
+                android:tint="@null" />
 
             <ImageView
                 android:id="@+id/itemRecurringIcon"

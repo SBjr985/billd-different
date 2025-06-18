@@ -47,11 +47,6 @@
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown" />
 
-        <CheckBox
-            android:id="@+id/isPayrollCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Is Payroll?" />
 
         <CheckBox
             android:id="@+id/isRecurringCheckbox"

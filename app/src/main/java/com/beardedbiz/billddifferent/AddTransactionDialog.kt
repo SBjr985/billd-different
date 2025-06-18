@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.google.android.material.button.MaterialButton
+import com.beardedbiz.billddifferent.util.CategorySpinnerAdapter
 
 class AddTransactionDialog(
     context: Context,
@@ -32,7 +33,6 @@ class AddTransactionDialog(
         val dateInput = findViewById<EditText>(R.id.dateInput)
         val endDateInput = findViewById<EditText>(R.id.endDateInput)
         val sourceInput = findViewById<EditText>(R.id.sourceInput)
-        val isPayrollCheckbox = findViewById<CheckBox>(R.id.isPayrollCheckbox)
         val isRecurringCheckbox = findViewById<CheckBox>(R.id.isRecurringCheckbox)
         val isSkippedCheckbox = findViewById<CheckBox>(R.id.isSkippedCheckbox)
         val categorySpinner = findViewById<Spinner>(R.id.categorySpinner)
@@ -110,10 +110,64 @@ class AddTransactionDialog(
         val setDateInput = setupAutoFormatDate(dateInput)
         val setEndDateInput = setupAutoFormatDate(endDateInput)
 
-        val categories = listOf("Select a Category", "Income", "Bills", "Groceries", "Fuel", "Entertainment", "Other")
+        val categories = listOf(
+            "Select a Category", "Salary", "Freelance / Side Income", "Investments / Dividends",
+            "Government Benefits", "Gifts / Reimbursements", "Rent / Mortgage", "Insurance",
+            "Utilities", "Internet / Cable", "Groceries", "Clothing", "Dining / Takeout",
+            "Medical / Healthcare", "Childcare / School", "Savings Goals", "Entertainment / Hobbies",
+            "Subscriptions", "Emergency Fund", "Fees / Bank Charges", "Education / Tuition", "Other"
+        )
+
         val frequencies = listOf("Daily", "Weekly", "Bi-Weekly", "Monthly", "Quarterly", "Annually")
 
-        categorySpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, categories)
+        categorySpinner.adapter = CategorySpinnerAdapter(context, categories)
+
+        // Step 1: Define keyword-to-category mappings
+        val keywordCategoryMap = mapOf(
+        "Salary" to listOf("salary", "paycheck", "payroll", "income", "wages", "job", "employment","payday"),
+        "Freelance / Side Income" to listOf("freelance", "gig", "side hustle", "side job", "contract", "consulting", "extra work", "odd job","uber","lyft","grubhub"),
+        "Investments / Dividends" to listOf("dividend", "stock", "investment", "returns", "interest", "capital gains", "robinhood", "etrade"),
+        "Government Benefits" to listOf("snap", "ebt", "unemployment", "ssi", "disability", "stimulus", "child tax", "social security", "gov check", "benefits"),
+        "Gifts / Reimbursements" to listOf("gift", "reimbursement", "repayment", "payback", "venmo", "zelle", "cashapp", "birthday", "christmas gift"),
+        "Rent / Mortgage" to listOf("rent", "mortgage", "landlord", "apartment", "lease", "home loan", "house payment", "property"),
+        "Insurance" to listOf("insurance", "premium", "allstate", "geico", "progressive", "health plan", "life insurance", "auto insurance", "coverage"),
+        "Utilities" to listOf("electric", "water", "gas", "utility", "power", "trash", "sewer", "evergy", "kcpl", "bill"),
+        "Internet / Cable" to listOf("internet", "cable", "wifi", "comcast", "spectrum", "cox", "xfinity", "router", "broadband"),
+        "Groceries" to listOf("grocery", "groceries", "food", "walmart", "aldi", "hyvee", "trader joe", "supermarket", "meijer", "kroger", "schnucks","price chopper"),
+        "Clothing" to listOf("clothing", "clothes", "shirt", "pants", "shoes", "dress", "old navy", "gap", "nike", "outfit", "wardrobe"),
+        "Dining / Takeout" to listOf("dining", "restaurant", "takeout", "fast food", "mcdonalds", "burger", "pizza", "chickfila", "taco", "lunch", "dinner", "ubereats", "doordash"),
+        "Medical / Healthcare" to listOf("hospital", "doctor", "clinic", "medicine", "prescription", "healthcare", "copay", "dentist", "optometrist", "therapy"),
+        "Childcare / School" to listOf("childcare", "school", "tuition", "daycare", "preschool", "fees", "uniform", "lunch fee", "books", "back to school"),
+        "Savings Goals" to listOf("save", "savings", "goal", "vacation fund", "nest egg", "stash"),
+        "Entertainment / Hobbies" to listOf("movie", "concert", "hobby", "game", "bowling", "fishing", "craft", "lego", "fun", "netflix", "theater", "event"),
+        "Subscriptions" to listOf("subscription", "netflix", "spotify", "hulu", "disney", "amazon prime", "streaming", "membership", "apple","peacock", "youtube", "recurring"),
+        "Emergency Fund" to listOf("emergency", "unexpected", "repair", "car trouble", "medical bill", "urgent", "accident"),
+        "Fees / Bank Charges" to listOf("fee", "overdraft", "late fee", "bank charge", "atm fee", "penalty", "nsf"),
+        "Education / Tuition" to listOf("tuition", "college", "university", "student loan", "course", "class", "education", "books"),
+        "Other" to listOf("misc", "other", "uncategorized", "random", "general", "etc", "stuff")
+        )
+
+        // Step 2: Auto-assign category based on source text
+        sourceInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val input = s?.toString()?.lowercase() ?: return
+                for ((categoryName, keywords) in keywordCategoryMap) {
+                    for (keyword in keywords) {
+                        if (input.contains(keyword)) {
+                            val index = categories.indexOf(categoryName)
+                            if (index > 0 && categorySpinner.selectedItemPosition != index) {
+                                categorySpinner.setSelection(index)
+                            }
+                            return
+                        }
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
         frequencySpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, frequencies)
         frequencySpinner.setSelection(frequencies.indexOf("Monthly"))
 
@@ -137,7 +191,6 @@ class AddTransactionDialog(
             }
 
             sourceInput.setText(it.source)
-            isPayrollCheckbox.isChecked = it.isPayroll
             isRecurringCheckbox.isChecked = it.isRecurring
             isSkippedCheckbox.isChecked = it.isSkipped
 
@@ -178,7 +231,6 @@ class AddTransactionDialog(
                 val isRecurring = isRecurringCheckbox.isChecked
                 val frequency = frequencySpinner.selectedItem.toString()
                 val category = categorySpinner.selectedItem.toString()
-                val isPayroll = isPayrollCheckbox.isChecked
                 val isPaid = transaction?.isPaid ?: false
                 val isSkipped = isSkippedCheckbox.isChecked
 
@@ -207,7 +259,6 @@ class AddTransactionDialog(
                                 isRecurring = true,
                                 frequency = frequency,
                                 category = category,
-                                isPayroll = isPayroll,
                                 isPaid = false,
                                 isSkipped = false,
                                 endDate = formattedEndDate
@@ -239,7 +290,6 @@ class AddTransactionDialog(
                                         isRecurring = false,
                                         frequency = frequency,
                                         category = category,
-                                        isPayroll = isPayroll,
                                         isPaid = isPaid,
                                         isSkipped = isSkipped,
                                         endDate = null
@@ -270,7 +320,6 @@ class AddTransactionDialog(
                         isRecurring = false,
                         frequency = frequency,
                         category = category,
-                        isPayroll = isPayroll,
                         isPaid = isPaid,
                         isSkipped = isSkipped
                     )))

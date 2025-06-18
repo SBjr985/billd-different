@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.beardedbiz.billddifferent.util.getCategoryIconResId
 
 class TransactionAdapter(
     private var transactions: List<Transaction>,
@@ -58,12 +59,6 @@ class TransactionAdapter(
             ContextCompat.getColor(context, R.color.dark_green)
         holder.amount.setTextColor(amountColor)
 
-        holder.payrollIcon.visibility = if (transaction.isPayroll) View.VISIBLE else View.GONE
-        holder.moneyIcon.visibility = if (transaction.isPayroll) View.GONE else View.VISIBLE
-        holder.moneyIcon.setImageResource(
-            if (transaction.amount < 0) R.drawable.ic_receipt else R.drawable.ic_attach_money
-        )
-
         holder.source.paintFlags = holder.source.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         holder.amount.paintFlags = holder.amount.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
@@ -85,6 +80,8 @@ class TransactionAdapter(
         else
             ContextCompat.getColor(context, R.color.light_green)
         holder.layout.setBackgroundColor(backgroundColor)
+
+        holder.categoryIcon.setImageResource(getCategoryIconResId(transaction.category))
 
         holder.itemView.setOnClickListener { onEdit(transaction) }
 
@@ -124,10 +121,9 @@ class TransactionAdapter(
 
     inner class TransactionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val layout: View = view.findViewById(R.id.transactionItemLayout)
-        val payrollIcon: ImageView = view.findViewById(R.id.itemPayrollIcon)
-        val moneyIcon: ImageView = view.findViewById(R.id.itemMoneyIcon)
         val recurringIcon: ImageView = view.findViewById(R.id.itemRecurringIcon)
         val skippedIcon: ImageView = view.findViewById(R.id.itemSkippedIcon)
+        val categoryIcon: ImageView = view.findViewById(R.id.itemCategoryIcon)
         val source: TextView = view.findViewById(R.id.itemSource)
         val date: TextView = view.findViewById(R.id.itemDate)
         val amount: TextView = view.findViewById(R.id.itemAmount)

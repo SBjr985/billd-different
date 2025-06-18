@@ -4,6 +4,7 @@
     <string name="money_icon_desc">Transaction Type Icon</string>
     <string name="hide_paid">Hide Paid</string>
     <string name="show_paid">Show Paid</string>
+    <string name="category_icon">Category icon</string>
     <string-array name="recurrence_options">
         <item>Weekly</item>
         <item>Biweekly</item>
